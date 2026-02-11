@@ -1,7 +1,6 @@
 import { Text, Box, useInput } from "ink";
 import Spinner from "ink-spinner";
 import { useEffect, useState } from "react";
-import { jsonrepair } from "jsonrepair";
 import z from "zod";
 
 const TITLE = `
