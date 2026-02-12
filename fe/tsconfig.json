@@ -1,10 +1,11 @@
 {
-	"extends": "@sindresorhus/tsconfig",
-	"compilerOptions": {
-		"outDir": "dist",
-		"jsx": "react-jsx",
-		"moduleResolution": "bundler",
-		"module": "esnext"
-	},
-	"include": ["src"]
+    "extends": "@sindresorhus/tsconfig",
+    "compilerOptions": {
+        "outDir": "dist",
+        "jsx": "react-jsx",
+        "moduleResolution": "bundler",
+        "noUnusedLocals": false,
+        "module": "esnext"
+    },
+    "include": ["src"]
 }

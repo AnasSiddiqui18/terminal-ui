@@ -2,6 +2,10 @@ import { Text, Box, useInput } from "ink";
 import Spinner from "ink-spinner";
 import { useEffect, useState } from "react";
 import z from "zod";
+import TerminalRenderer from "marked-terminal";
+import { marked } from "marked";
+import fs from "fs";
+import { jsonrepair } from "jsonrepair";
 
 const TITLE = `
  ███╗   ███╗  █████╗   ██████╗  ██╗  ██████╗
@@ -32,10 +36,23 @@ type Message =
           role: "user";
       };
 
+// @ts-ignore
+marked.setOptions({ renderer: new TerminalRenderer() });
+
 const streamingResponseSchema = z.union([
     z.object({ type: z.literal("error"), message: z.string() }),
     z.object({ type: z.literal("token"), value: z.string() }),
 ]);
+
+function logStreamError(error: any) {
+    const logLine = `[${new Date().toUTCString()}] [ERROR] ${
+        error.stack || error.message
+    }\n`;
+
+    fs.appendFile("stream-error.log", logLine, (err) => {
+        console.error("failed to write log", err);
+    });
+}
 
 export default function App() {
     const [inputValue, setInputValue] = useState("");
@@ -88,7 +105,7 @@ export default function App() {
 
                         const textChunk = decoder.decode(value).trim();
 
-                        const parsedChunk = JSON.parse(textChunk);
+                        const parsedChunk = JSON.parse(jsonrepair(textChunk));
 
                         const validatedData =
                             streamingResponseSchema.safeParse(parsedChunk);
@@ -153,6 +170,8 @@ export default function App() {
 
                     setInputValue("");
                 } catch (error) {
+                    logStreamError(error);
+
                     setMessages((prevMessages) => [
                         ...prevMessages,
                         {
@@ -163,7 +182,7 @@ export default function App() {
                         },
                     ]);
 
-                    console.error("something went wrong", error);
+                    setLoading(false);
                 }
             }
         } else if (key.backspace || key.delete) {
@@ -184,7 +203,7 @@ export default function App() {
         <Box flexDirection="column" padding={1}>
             <Text color="white">{TITLE}</Text>
 
-            <Box flexDirection="column" marginTop={1} gap={1}>
+            <Box flexDirection="column" marginTop={1}>
                 {messages.map((msg, index) => {
                     const isBot = msg.role === "assistant";
 
@@ -203,7 +222,7 @@ export default function App() {
                                 }
                                 wrap="wrap"
                             >
-                                {msg.content}
+                                {marked(msg.content)}
                             </Text>
                         </Box>
                     );

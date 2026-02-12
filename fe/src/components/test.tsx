@@ -1,13 +1,13 @@
-import {useChatMessages} from '@ai-sdk-tools/store';
-import {useEffect} from 'react';
+import { useChatMessages } from "@ai-sdk-tools/store";
+import { useEffect } from "react";
 
 export function Test() {
-	const messages = useChatMessages();
+    const messages = useChatMessages();
 
-	useEffect(() => {
-		const message = messages[0];
-		console.log('part', message?.parts);
-	}, [messages]);
+    useEffect(() => {
+        const message = messages[0];
+        console.log("part", message?.parts);
+    }, [messages]);
 
-	return '';
+    return "";
 }

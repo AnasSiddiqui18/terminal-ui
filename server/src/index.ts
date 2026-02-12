@@ -51,7 +51,7 @@ app.post("/chat", async (c) => {
                             JSON.stringify({
                                 type: "error",
                                 message: "Streaming failed....",
-                            }),
+                            }) + "\n",
                         );
                         controller.close();
                     },
@@ -62,7 +62,7 @@ app.post("/chat", async (c) => {
                         JSON.stringify({
                             type: "token",
                             value: chunk,
-                        }),
+                        }) + "\n",
                     );
                 }
 
